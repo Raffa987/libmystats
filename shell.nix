@@ -10,8 +10,6 @@ pkgs.mkShell {
 
     # Librerie richieste
     buildInputs = with pkgs; [
-        gtk4
-        gtk4-layer-shell
         cudaPackages.cuda_nvml_dev 
     ];
 
