@@ -1,0 +1,10 @@
+# Build artifacts
+build/
+*.o
+*.so
+
+# Generated
+compile_commands.json
+
+# Editor
+.vscode/
