@@ -1,4 +1,4 @@
-# ags-sysstats
+# ags-sysstats(libmystats)
 
 A small C library that reads live CPU, GPU and RAM statistics directly from the Linux system interfaces, built to feed real-time data into an [AGS](https://github.com/Aylur/ags) status bar (Hyprland/Wayland desktop).
 
