@@ -1,4 +1,4 @@
-# ags-sysstats
+# ags-sysstats(libmystats)
 
 A small C library that reads live CPU, GPU and RAM statistics directly from the Linux system interfaces, built to feed real-time data into an [AGS](https://github.com/Aylur/ags) status bar (Hyprland/Wayland desktop).
 
@@ -8,11 +8,11 @@ A small C library that reads live CPU, GPU and RAM statistics directly from the 
 
 ## What it does
 
-No `/proc` parsing shortcuts, no shelling out to other tools — this library talks to the kernel interfaces directly:
+No `/proc` parsing shortcuts, no shelling out to other tools - this library talks to the kernel interfaces directly:
 
-- **CPU temperature** — reads straight from `/sys/class/hwmon/*/temp1_input`, auto-detecting the right hwmon device (`k10temp` for AMD, `coretemp` for Intel) via `opendir`/`readdir`.
-- **GPU stats** (memory usage %, temperature) — via **NVML** (NVIDIA Management Library).
-- **RAM** (total/used, in GB) — via `sysinfo()`.
+- **CPU temperature** - reads straight from `/sys/class/hwmon/*/temp1_input`, auto-detecting the right hwmon device (`k10temp` for AMD, `coretemp` for Intel) via `opendir`/`readdir`.
+- **GPU stats** (memory usage %, temperature) - via **NVML** (NVIDIA Management Library).
+- **RAM** (total/used, in GB) - via `sysinfo()`.
 
 The result is a simple `struct mystats` that gets updated on demand, cheap enough to poll continuously for a live bar widget.
 
@@ -82,7 +82,7 @@ make
 
 ## Why
 
-Built as the data layer for a custom [AGS](https://github.com/Aylur/ags) + Hyprland status bar — instead of polling stats through shell commands on every tick, this library exposes them as a small, fast, native module.
+Built as the data layer for a custom [AGS](https://github.com/Aylur/ags) + Hyprland status bar - instead of polling stats through shell commands on every tick, this library exposes them as a small, fast, native module.
 
 ## License
 

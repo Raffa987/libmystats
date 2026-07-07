@@ -6,7 +6,7 @@
 struct mystats {
     nvmlDevice_t device;
     int GPU_mem_used;
-    unsigned  GPU_temp;
+    unsigned int GPU_temp;
 
     int CPU_temp;
     char CPU_path[512];
