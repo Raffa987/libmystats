@@ -8,6 +8,20 @@
 #include <string.h>
 #include <sys/sysinfo.h>
 
+
+struct mystats {
+    nvmlDevice_t device;
+    int GPU_mem_used;
+    unsigned int GPU_temp;
+
+    int CPU_temp;
+    char CPU_path[512];
+
+    float RAM_tot;
+    float RAM_used;
+};
+
+
 /*
 ---UNUSED---
 #define BAT_CAP_PATH "/sys/class/power_supply/BAT1/capacity"
@@ -114,18 +128,37 @@ int CPUpathGetter(char *path_buffer, size_t max_len) {
     return -1;
 }
 
+void memUpdate(struct mystats *stats) {
+    int fd = open("/proc/meminfo", O_RDONLY);
+    char buf[512];
 
-struct mystats {
-    nvmlDevice_t device;
-    int GPU_mem_used;
-    unsigned int GPU_temp;
 
-    int CPU_temp;
-    char CPU_path[512];
+    ssize_t bytes_read = read(fd, buf, sizeof(buf) - 1);
+    close(fd);
 
-    float RAM_tot;
-    float RAM_used;    
-};
+    if (bytes_read > 0) {
+        buf[bytes_read] = '\0';
+        
+        long long mem_total_kb = 0;
+        long long mem_available_kb = 0;
+
+        char *total_ptr = strstr(buf, "MemTotal:");
+        char *avail_ptr = strstr(buf, "MemAvailable:");
+
+        if (total_ptr) {
+            sscanf(total_ptr, "MemTotal: %lld kB", &mem_total_kb);
+        }
+        if (avail_ptr) {
+            sscanf(avail_ptr, "MemAvailable: %lld kB", &mem_available_kb);
+        }
+
+        if (mem_total_kb > 0 && mem_available_kb > 0) {
+            stats->RAM_tot = mem_total_kb / (1024.0 * 1024.0);
+            stats->RAM_used = (mem_total_kb - mem_available_kb) / (1024.0 * 1024.0);
+        }
+    }    
+}
+
 
 void statsUpdate(struct mystats *stats) {
     nvmlMemory_t GPU_memory;
@@ -141,9 +174,11 @@ void statsUpdate(struct mystats *stats) {
     struct sysinfo info;
     sysinfo(&info);
 
-    stats->RAM_tot = (info.totalram * info.mem_unit) / (1024.0 * 1024.0 * 1024.0);
-    stats->RAM_used = (info.totalram * info.mem_unit) / (1024.0 * 1024.0 * 1024.0) - (info.freeram * info.mem_unit) / (1024.0 * 1024.0 * 1024.0);
+    //Doesn't work(I mean it "work" but it doesn't like work work)
+    /*stats->RAM_tot = (info.totalram * info.mem_unit) / (1024.0 * 1024.0 * 1024.0);
+    stats->RAM_used = (info.totalram * info.mem_unit) / (1024.0 * 1024.0 * 1024.0) - (info.freeram * info.mem_unit) / (1024.0 * 1024.0 * 1024.0);*/
     
+    memUpdate(stats);
 }
 
 int statsInit(struct mystats *stats) {
@@ -167,3 +202,14 @@ int statsCleanup(void) {
 
     return 0;
 }
+
+
+/*char *total_ptr = strstr(buf, "MemTotal:");
+        char *avail_ptr = strstr(buf, "MemAvailable:");
+
+        if (total_ptr) {
+            sscanf(total_ptr, "MemTotal: %lld kB", &mem_total_kb);
+        }
+        if (avail_ptr) {
+            sscanf(avail_ptr, "MemAvailable: %lld kB", &mem_available_kb);
+        }*/

@@ -10,7 +10,7 @@ LIBS = -lnvidia-ml
 .PHONY: all clean
 
 # Rimosso $(BUILD_DIR)/example
-all: $(BUILD_DIR)/libmystats.so $(BUILD_DIR)/test_app
+all: $(BUILD_DIR)/libmystats.so $(BUILD_DIR)/getStats
 
 # Regola per creare la cartella build se non esiste
 $(BUILD_DIR):
@@ -25,7 +25,8 @@ $(BUILD_DIR)/stats.o: src/stats.c include/stats.h | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Usa $$ORIGIN per permettere all'eseguibile di trovare la .so ovunque tu lo avvii
-$(BUILD_DIR)/test_app: tests/test.c $(BUILD_DIR)/libmystats.so | $(BUILD_DIR)
+# Sostituito src/windowInit.c con src/statsGet.c e aggiunto lo spazio prima di $(BUILD_DIR)
+$(BUILD_DIR)/getStats: src/getStats.c $(BUILD_DIR)/libmystats.so | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $@ $< -L$(BUILD_DIR) -lmystats -Wl,-rpath,'$$ORIGIN' $(LIBS)
 
 # --- Pulizia ---
